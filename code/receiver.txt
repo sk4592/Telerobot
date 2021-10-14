@@ -1,0 +1,87 @@
+#include <VirtualWire.h>
+
+int D2 = 4;
+int M1DIR = 7;
+int M2DIR = 8;
+int M1PWM = 9;
+int M2PWM = 10;
+
+byte message[VW_MAX_MESSAGE_LEN]; // the message received
+byte msgLength = VW_MAX_MESSAGE_LEN; // length of the message
+const int receive_pin = 12;
+ void setup()
+ {
+  //Serial.begin(9600);
+  pinMode(D2,OUTPUT);
+  pinMode(M1PWM,OUTPUT);
+  pinMode(M2PWM,OUTPUT);
+  pinMode(M1DIR,OUTPUT);
+  pinMode(M2DIR,OUTPUT);
+   vw_set_rx_pin(receive_pin);
+  Serial.begin(9600);
+  Serial.println("Ready"); //the thing first seen in Serial Monitor 
+  vw_setup(2000); 
+  vw_rx_start(); // gett the receiver work 
+  digitalWrite(D2,HIGH);
+} ;
+
+
+ void loop(){
+  int i = 255;
+   if (vw_get_message(message, &msgLength)) 
+   { 
+    
+    if (message[0] == 'f')
+      {
+        Serial.println("forward"); 
+        
+           digitalWrite(M1DIR, LOW);
+           digitalWrite(M2DIR, HIGH);
+           analogWrite(M1PWM, i);
+           analogWrite(M2PWM, i);
+       
+        
+      }
+    else if (message[0] == 'b')
+      {
+        Serial.println("backward"); 
+        
+         digitalWrite(M1DIR, HIGH);
+         digitalWrite(M2DIR, LOW);
+         analogWrite(M1PWM, i);
+         analogWrite(M2PWM, i);
+       
+      }
+      else if (message[0] == 'r')
+      {
+        Serial.println("right"); 
+        
+          digitalWrite(M1DIR, LOW);
+          digitalWrite(M2DIR, LOW);
+          analogWrite(M1PWM, i);
+          analogWrite(M2PWM, i);
+        
+      }
+    else if (message[0] == 'l')
+      {
+        Serial.println("left");
+        
+        
+          digitalWrite(M1DIR, HIGH);
+          digitalWrite(M2DIR, HIGH);
+          analogWrite(M1PWM, i);
+          analogWrite(M2PWM, i);
+         
+      }
+      else if(message[0] == 'h')
+      {
+        Serial.println("home");
+        
+         digitalWrite(M1DIR, LOW);
+         digitalWrite(M2DIR, HIGH);
+         analogWrite(M1PWM, 0);
+         analogWrite(M2PWM, 0);
+        
+      }
+   }
+ }
